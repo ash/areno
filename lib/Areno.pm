@@ -1,5 +1,7 @@
 package Areno;
 
+use strict;
+
 sub new {
     my ($class) = @_;
     
