@@ -28,6 +28,12 @@ sub new {
 sub init {
     my ($this) = @_;
     
+    $this->read_sites();
+}
+
+sub read_sites {
+    my ($this) = @_;
+
     my $base_path = getcwd() || '.';
     my $sites_path = "$base_path/sites";
 
@@ -37,7 +43,14 @@ sub init {
     close $sites;
     die "No sites found in $sites_path" unless @sites;
     
-    warn Dumper(\@sites); use Data::Dumper;
+    for my $site (@sites) {
+        $this->import_site($site, $sites_path);
+    }
+}
+
+sub import_site {
+    my ($this, $site, $sites_path) = $_;
+    
 }
 
 sub status {
