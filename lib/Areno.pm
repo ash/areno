@@ -50,7 +50,7 @@ sub read_sites {
 
 sub import_dir {
     my ($this, $path) = @_;
-warn "IMPORTING $path";
+
     opendir my($dir), $path;
     my @dir = readdir $dir;
     closedir $dir;
