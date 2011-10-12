@@ -1,3 +1,9 @@
 package Areno::DefaultSite::Default;
 
-1;
+use strict;
+
+sub import {
+    
+}
+
+return __PACKAGE__;

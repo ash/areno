@@ -44,22 +44,25 @@ sub read_sites {
     die "No sites found in $sites_path" unless @sites;
     
     for my $site (@sites) {
-        $this->import_site($site, $sites_path);
+        $this->import_dir("$sites_path/$site");
     }
 }
 
-sub import_site {
-    my ($this, $site, $sites_path) = $_;
-    
-    my $path = "$sites_path/$site";
+sub import_dir {
+    my ($this, $path) = @_;
+warn "IMPORTING $path";
     opendir my($dir), $path;
     my @dir = readdir $dir;
     closedir $dir;
 
     for my $item (@dir) {
         my $item_path = "$path/$item";
-        if ($item_path =~ -f $item_path) {
-            
+        if ($item_path =~ /\.pm$/ && -f $item_path) {
+            my $package = require $item_path;
+            $package->import();            
+        }
+        elsif (-d $item_path && $item =~ /\w/) {
+            $this->import_dir("$path/$item");
         }
     }
 }
