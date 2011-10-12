@@ -51,6 +51,17 @@ sub read_sites {
 sub import_site {
     my ($this, $site, $sites_path) = $_;
     
+    my $path = "$sites_path/$site";
+    opendir my($dir), $path;
+    my @dir = readdir $dir;
+    closedir $dir;
+
+    for my $item (@dir) {
+        my $item_path = "$path/$item";
+        if ($item_path =~ -f $item_path) {
+            
+        }
+    }
 }
 
 sub status {
