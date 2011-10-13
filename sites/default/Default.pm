@@ -1,9 +1,8 @@
-package Areno::DefaultSite::Default;
+package Areno::Default;
 
 use strict;
+use Areno::Page;
 
-sub import {
-    
-}
+route '/';
 
 return __PACKAGE__;
