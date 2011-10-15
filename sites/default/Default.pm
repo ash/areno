@@ -1,8 +1,10 @@
 package Areno::Default;
 
 use strict;
-use Areno::Page;
+use base 'Areno::Page';
 
-route '/';
+sub route {
+    '/'
+}
 
-return __PACKAGE__;
+__PACKAGE__;

@@ -5,17 +5,18 @@ use strict;
 use base 'Exporter';
 our @EXPORT = qw(route new);
 
-my $Route;
-
 sub import {
+    my ($this) = @_;
 
-    return ::SUPER->import;
+    SUPER->import(@_);
 }
 
 sub route {
-    my ($route) = @_;
+    return qr{};
+}
 
-    $Route = $route;
+sub run {
+    
 }
 
 1;

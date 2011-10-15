@@ -44,12 +44,12 @@ sub read_sites {
     die "No sites found in $sites_path" unless @sites;
     
     for my $site (@sites) {
-        $this->import_dir("$sites_path/$site");
+        $this->import_dir($site, "$sites_path/$site");
     }
 }
 
 sub import_dir {
-    my ($this, $path) = @_;
+    my ($this, $site, $path) = @_;
 
     opendir my($dir), $path;
     my @dir = readdir $dir;
@@ -59,7 +59,8 @@ sub import_dir {
         my $item_path = "$path/$item";
         if ($item_path =~ /\.pm$/ && -f $item_path) {
             my $package = require $item_path;
-            $package->import();            
+            $package->import();
+            $this->{dispatch}->set_route($package, $site, $package->route());
         }
         elsif (-d $item_path && $item =~ /\w/) {
             $this->import_dir("$path/$item");
@@ -88,8 +89,8 @@ sub body {
 sub run {
     my ($this, $env) = @_;
 
-    #my $page = $this->{dispatch}->dispatch($env);
-    #$page->run();
+    my $page = $this->{dispatch}->dispatch($env);
+    $page->run();
 }
 
 1;
