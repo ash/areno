@@ -18,7 +18,7 @@ sub dispatch {
     
     my $server_name = $env->{SERVER_NAME} || 'default';
     $server_name =~ s/^localhost$/default/;
-    my $request_uri = $env->{REQUEST_URI} || '/';
+    my $request_uri = $env->{PATH_INFO} || '/';
 
     my $current = $this->{route}{$server_name};    
     my @route = grep {$request_uri ~~ $current->{$_}} keys %$current;

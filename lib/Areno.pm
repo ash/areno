@@ -3,6 +3,7 @@ package Areno;
 use strict;
 
 use Cwd;
+use Plack::Request;
 use XML::LibXML;
 use Areno::Dispatch;
 
@@ -121,6 +122,7 @@ sub new_manifest {
     $dom->documentElement()->appendChild($manifest);
     
     $this->manifest_date($manifest);
+    $this->manifest_arguments($manifest, $env);
     
     return $manifest;
 }
@@ -133,7 +135,9 @@ sub manifest_date {
     my $dateNode = new XML::LibXML::Element('date');
     $manifest->appendChild($dateNode);
 
-    $dateNode->setAttribute('rfc', POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",$sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst));
+    $dateNode->setAttribute('rfc', POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",
+                                   $sec, $min, $hour, $mday,
+                                   $mon, $year, $wday, $yday, $isdst));
     $dateNode->setAttribute($$_[0], $$_[1]) for (
             [year  => 1900 + $year],
             [day   => $mday],
@@ -143,6 +147,24 @@ sub manifest_date {
             [sec   => $sec],
             [wday  => $wday]
     );
+}
+
+sub manifest_arguments {
+    my ($this, $manifest, $env) = @_;
+    
+    my $arguments = new XML::LibXML::Element('arguments');
+    $manifest->appendChild($arguments);
+    
+    my $request = new Plack::Request($env);
+    my $pairs = $request->query_parameters();
+    for my $key (keys %$pairs) {
+        for my $value ($pairs->get_all($key)) {
+            my $item = new XML::LibXML::Element('item');
+            $item->setAttribute('name', $key);
+            $item->appendText($value);
+            $arguments->appendChild($item);
+        }
+    }
 }
 
 sub new_content {
