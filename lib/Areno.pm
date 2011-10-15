@@ -156,7 +156,7 @@ sub manifest_arguments {
     $manifest->appendChild($arguments);
     
     my $request = new Plack::Request($env);
-    my $pairs = $request->query_parameters();
+    my $pairs = $request->parameters();
     for my $key (keys %$pairs) {
         for my $value ($pairs->get_all($key)) {
             my $item = new XML::LibXML::Element('item');
