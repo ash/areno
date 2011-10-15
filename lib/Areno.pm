@@ -4,7 +4,8 @@ use strict;
 
 use Cwd;
 use Plack::Request;
-use XML::LibXML;
+
+use Areno::Manifest;
 use Areno::Dispatch;
 
 sub new {
@@ -15,7 +16,6 @@ sub new {
             status => 200,
             headers => [
                 'Content-Type' => 'text/html',
-                'Set-Cookie' => "test=abc%34def",
             ],
             body => ['I am Areno.'],
         },
@@ -105,7 +105,9 @@ sub new_doc {
     my $root = $dom->createElement('page');
     $dom->setDocumentElement($root);
 
-    my $manifest = $this->new_manifest($dom, $env);
+    my $manifest = new Areno::Manifest($env);
+    $root->appendChild($manifest->node());
+
     my $content = $this->new_content($dom, $env);
 
     return {
@@ -114,94 +116,6 @@ sub new_doc {
         manifest => $manifest,
         content  => $content,
     };
-}
-
-sub new_manifest {
-    my ($this, $dom, $env) = @_;
-    
-    my $manifest = $dom->createElement('manifest');
-    $dom->documentElement()->appendChild($manifest);
-    
-    $this->manifest_date($manifest);
-    $this->manifest_request($manifest, $env);
-    
-    return $manifest;
-}
-
-sub manifest_date {
-    my ($this, $manifest) = @_;
-
-    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
-
-    my $dateNode = new XML::LibXML::Element('date');
-    $manifest->appendChild($dateNode);
-
-    $dateNode->setAttribute('rfc', POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",
-                                   $sec, $min, $hour, $mday,
-                                   $mon, $year, $wday, $yday, $isdst));
-    $dateNode->setAttribute($$_[0], $$_[1]) for (
-            [year  => 1900 + $year],
-            [day   => $mday],
-            [month => $mon + 1],
-            [hour  => $hour],
-            [min   => $min],
-            [sec   => $sec],
-            [wday  => $wday]
-    );
-}
-
-sub manifest_request {
-    my ($this, $manifest, $env) = @_;
-    
-    my $request = new Plack::Request($env);
-
-    my $requestNode = new XML::LibXML::Element('request');
-    $manifest->appendChild($requestNode);
-
-    $this->manifest_arguments($requestNode, $request);
-    $this->manifest_cookies($requestNode, $request);
-    $this->manifest_useragent($requestNode, $request);
-}
-
-sub manifest_arguments {
-    my ($this, $requestNode, $request) = @_;
-    
-    my $argumentsNode = new XML::LibXML::Element('arguments');
-    $requestNode->appendChild($argumentsNode);
-    
-    my $pairs = $request->parameters();
-    for my $key (keys %$pairs) {
-        for my $value ($pairs->get_all($key)) {
-            my $itemNode = new XML::LibXML::Element('item');
-            $itemNode->setAttribute('name', $key);
-            $itemNode->appendText($value);
-            $argumentsNode->appendChild($itemNode);
-        }
-    }
-}
-
-sub manifest_cookies {
-    my ($this, $requestNode, $request) = @_;
-    
-    my $cookiesNode = new XML::LibXML::Element('cookies');
-    $requestNode->appendChild($cookiesNode);
-    
-    my $pairs = $request->cookies();
-    for my $key (keys %$pairs) {
-        my $itemNode = new XML::LibXML::Element('item');
-        $itemNode->setAttribute('name', $key);
-        $itemNode->appendText($pairs->{$key});
-        $cookiesNode->appendChild($itemNode);
-    }
-}
-
-sub manifest_useragent {
-    my ($this, $requestNode, $request) = @_;
-    
-    my $user_agentNode = new XML::LibXML::Element('user-agent');
-    $requestNode->appendChild($user_agentNode);
-    
-    $user_agentNode->appendText($request->user_agent());
 }
 
 sub new_content {
