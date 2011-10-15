@@ -3,6 +3,7 @@ package Areno;
 use strict;
 
 use Cwd;
+use XML::LibXML;
 use Areno::Dispatch;
 
 sub new {
@@ -89,8 +90,68 @@ sub body {
 sub run {
     my ($this, $env) = @_;
 
+    $this->{doc} = $this->new_doc($env);
+    
     my $page = $this->{dispatch}->dispatch($env);
-    $page->run();
+    $page->run($this->{doc});
+}
+
+sub new_doc {
+    my ($this, $env) = @_;
+    
+    my $dom = (new XML::LibXML)->createDocument('1.0', 'UTF-8');
+    my $root = $dom->createElement('page');
+    $dom->setDocumentElement($root);
+
+    my $manifest = $this->new_manifest($dom, $env);
+    my $content = $this->new_content($dom, $env);
+
+    return {
+        dom      => $dom,
+        root     => $root,
+        manifest => $manifest,
+        content  => $content,
+    };
+}
+
+sub new_manifest {
+    my ($this, $dom, $env) = @_;
+    
+    my $manifest = $dom->createElement('manifest');
+    $dom->documentElement()->appendChild($manifest);
+    
+    $this->manifest_date($manifest);
+    
+    return $manifest;
+}
+
+sub manifest_date {
+    my ($this, $manifest) = @_;
+
+    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
+
+    my $dateNode = new XML::LibXML::Element('date');
+    $manifest->appendChild($dateNode);
+
+    $dateNode->setAttribute('rfc', POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",$sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst));
+    $dateNode->setAttribute($$_[0], $$_[1]) for (
+            [year  => 1900 + $year],
+            [day   => $mday],
+            [month => $mon + 1],
+            [hour  => $hour],
+            [min   => $min],
+            [sec   => $sec],
+            [wday  => $wday]
+    );
+}
+
+sub new_content {
+    my ($this, $dom, $env) = @_;
+    
+    my $content = $dom->createElement('content');
+    $dom->documentElement()->appendChild($content);
+    
+    return $content;
 }
 
 1;

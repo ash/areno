@@ -17,7 +17,7 @@ sub dispatch {
     my ($this, $env) = @_;
     
     my $server_name = $env->{SERVER_NAME} || 'default';
-    $server_name =~ s/localhost/default/;
+    $server_name =~ s/^localhost$/default/;
     my $request_uri = $env->{REQUEST_URI} || '/';
 
     my $current = $this->{route}{$server_name};    
