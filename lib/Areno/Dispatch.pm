@@ -23,8 +23,8 @@ sub dispatch {
     my $current = $this->{route}{$server_name};    
     my @route = grep {$request_uri ~~ $current->{$_}} keys %$current;
 
-    warn "More than one possible route" if @route >= 1;
-    
+    warn("More than one possible route for $server_name$request_uri: " . join(',', @route) . "\n") if @route > 1;
+
     return $route[0];
 }
 

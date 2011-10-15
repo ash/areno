@@ -1,14 +1,14 @@
-package Areno::Default;
+package Areno::Favicon;
 
 use strict;
 use base 'Areno::Page';
 
 sub route {
-    '/'
+    '/favicon.ico'
 }
 
 sub run {
-    warn "RUN\n";
+    warn "Favicon!"
 }
 
 __PACKAGE__;
