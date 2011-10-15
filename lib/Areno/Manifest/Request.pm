@@ -2,6 +2,10 @@ package Areno::Manifest::Request;
 
 use strict;
 
+use base 'Areno::Node';
+
+use XML::LibXML;
+
 sub new {
     my ($class, $env) = @_;
     
@@ -23,12 +27,6 @@ sub init {
     $this->{node}->appendChild($this->argumentsNode($request));
     $this->{node}->appendChild($this->cookiesNode($request));
     $this->{node}->appendChild($this->useragentNode($request));
-}
-
-sub node {
-    my ($this) = @_;
-    
-    return $this->{node};
 }
 
 sub argumentsNode {

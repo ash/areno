@@ -2,6 +2,8 @@ package Areno::Manifest;
 
 use strict;
 
+use base 'Areno::Node';
+
 use XML::LibXML;
 use Areno::Manifest::Request;
 
@@ -23,12 +25,6 @@ sub init {
     
     $this->{node}->appendChild($this->dateNode());
     $this->{node}->appendChild((new Areno::Manifest::Request($env))->node());
-}
-
-sub node {
-    my ($this) = @_;
-    
-    return $this->{node};
 }
 
 sub dateNode {

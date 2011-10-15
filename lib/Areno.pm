@@ -6,6 +6,7 @@ use Cwd;
 use Plack::Request;
 
 use Areno::Manifest;
+use Areno::Content;
 use Areno::Dispatch;
 
 sub new {
@@ -108,7 +109,8 @@ sub new_doc {
     my $manifest = new Areno::Manifest($env);
     $root->appendChild($manifest->node());
 
-    my $content = $this->new_content($dom, $env);
+    my $content = new Areno::Content();
+    $root->appendChild($content->node());
 
     return {
         dom      => $dom,
