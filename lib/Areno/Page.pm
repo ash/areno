@@ -6,13 +6,17 @@ use base 'Exporter';
 our @EXPORT = qw(route new);
 
 sub import {
-    my ($this) = @_;
+    my ($this, $args) = @_;
 
     SUPER->import(@_);
 }
 
 sub route {
-    return qr{};
+    qr{};
+}
+
+sub transform {
+    'default'
 }
 
 sub run {

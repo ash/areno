@@ -8,6 +8,7 @@ use Plack::Request;
 use Areno::Manifest;
 use Areno::Content;
 use Areno::Dispatch;
+use Areno::Transform;
 
 sub new {
     my ($class) = @_;
@@ -18,9 +19,10 @@ sub new {
             headers => [
                 'Content-Type' => 'text/html',
             ],
-            body => ['I am Areno.'],
+            body => [],
         },
-        dispatch => new Areno::Dispatch(),
+        dispatch  => new Areno::Dispatch(),
+        transform => new Areno::Transform(),
     };
     bless $this, $class;
     
@@ -65,6 +67,7 @@ sub import_dir {
             my $package = require $item_path;
             $package->import();
             $this->{dispatch}->set_route($package, $site, $package->route());
+            $this->{transform}->set_transform($package, $site, $package->transform());
         }
         elsif (-d $item_path && $item =~ /\w/) {
             $this->import_dir("$path/$item");
@@ -97,6 +100,7 @@ sub run {
     
     my $page = $this->{dispatch}->dispatch($env);
     $page->run($this->{doc});
+    $this->transform($page);
 }
 
 sub new_doc {
@@ -120,13 +124,10 @@ sub new_doc {
     };
 }
 
-sub new_content {
-    my ($this, $dom, $env) = @_;
-    
-    my $content = $dom->createElement('content');
-    $dom->documentElement()->appendChild($content);
-    
-    return $content;
+sub transform {
+    my ($this, $page) = @_;
+
+    push @{$this->{http}{body}}, $this->{transform}->transform($this->{doc}, $page);
 }
 
 1;

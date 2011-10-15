@@ -8,7 +8,7 @@ sub route {
 }
 
 sub run {
-    warn "Favicon!"
+
 }
 
 __PACKAGE__;
