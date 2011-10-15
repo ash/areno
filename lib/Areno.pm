@@ -15,6 +15,7 @@ sub new {
             status => 200,
             headers => [
                 'Content-Type' => 'text/html',
+                'Set-Cookie' => "test=abc%34def",
             ],
             body => ['I am Areno.'],
         },
@@ -122,7 +123,7 @@ sub new_manifest {
     $dom->documentElement()->appendChild($manifest);
     
     $this->manifest_date($manifest);
-    $this->manifest_arguments($manifest, $env);
+    $this->manifest_request($manifest, $env);
     
     return $manifest;
 }
@@ -149,22 +150,58 @@ sub manifest_date {
     );
 }
 
-sub manifest_arguments {
+sub manifest_request {
     my ($this, $manifest, $env) = @_;
     
-    my $arguments = new XML::LibXML::Element('arguments');
-    $manifest->appendChild($arguments);
-    
     my $request = new Plack::Request($env);
+
+    my $requestNode = new XML::LibXML::Element('request');
+    $manifest->appendChild($requestNode);
+
+    $this->manifest_arguments($requestNode, $request);
+    $this->manifest_cookies($requestNode, $request);
+    $this->manifest_useragent($requestNode, $request);
+}
+
+sub manifest_arguments {
+    my ($this, $requestNode, $request) = @_;
+    
+    my $argumentsNode = new XML::LibXML::Element('arguments');
+    $requestNode->appendChild($argumentsNode);
+    
     my $pairs = $request->parameters();
     for my $key (keys %$pairs) {
         for my $value ($pairs->get_all($key)) {
-            my $item = new XML::LibXML::Element('item');
-            $item->setAttribute('name', $key);
-            $item->appendText($value);
-            $arguments->appendChild($item);
+            my $itemNode = new XML::LibXML::Element('item');
+            $itemNode->setAttribute('name', $key);
+            $itemNode->appendText($value);
+            $argumentsNode->appendChild($itemNode);
         }
     }
+}
+
+sub manifest_cookies {
+    my ($this, $requestNode, $request) = @_;
+    
+    my $cookiesNode = new XML::LibXML::Element('cookies');
+    $requestNode->appendChild($cookiesNode);
+    
+    my $pairs = $request->cookies();
+    for my $key (keys %$pairs) {
+        my $itemNode = new XML::LibXML::Element('item');
+        $itemNode->setAttribute('name', $key);
+        $itemNode->appendText($pairs->{$key});
+        $cookiesNode->appendChild($itemNode);
+    }
+}
+
+sub manifest_useragent {
+    my ($this, $requestNode, $request) = @_;
+    
+    my $user_agentNode = new XML::LibXML::Element('user-agent');
+    $requestNode->appendChild($user_agentNode);
+    
+    $user_agentNode->appendText($request->user_agent());
 }
 
 sub new_content {
