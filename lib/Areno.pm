@@ -127,7 +127,7 @@ sub new_doc {
 sub transform {
     my ($this, $page) = @_;
 
-    push @{$this->{http}{body}}, $this->{transform}->transform($this->{doc}, $page);
+    $this->{http}{body} = [$this->{transform}->transform($this->{doc}, $page)];
 }
 
 1;

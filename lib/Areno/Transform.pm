@@ -29,7 +29,7 @@ sub transform {
     my $xslt = new XML::LibXSLT();
     my $stylesheet = $xslt->parse_stylesheet($style_source);
     my $result = $stylesheet->transform($doc->{dom});
-    
+
     return $stylesheet->output_as_bytes($result);
 }
 
