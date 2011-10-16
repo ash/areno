@@ -8,10 +8,11 @@ use XML::LibXML;
 use Areno::Manifest::Request;
 
 sub new {
-    my ($class, $env) = @_;
+    my ($class, $areno, $env) = @_;
     
     my $this = {
-        node => new XML::LibXML::Element('manifest'),
+        areno => $areno,
+        node  => new XML::LibXML::Element('manifest'),
     };
     bless $this, $class;
 
@@ -24,7 +25,7 @@ sub init {
     my ($this, $env) = @_;
     
     $this->{node}->appendChild($this->dateNode());
-    $this->{node}->appendChild((new Areno::Manifest::Request($env))->node());
+    $this->{node}->appendChild((new Areno::Manifest::Request($this->{areno}, $env))->node());
 }
 
 sub dateNode {

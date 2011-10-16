@@ -7,10 +7,11 @@ use base 'Areno::Node';
 use XML::LibXML;
 
 sub new {
-    my ($class, $env) = @_;
+    my ($class, $areno, $env) = @_;
     
     my $this = {
-        node => new XML::LibXML::Element('request'),
+        areno => $areno,
+        node  => new XML::LibXML::Element('request'),
     };
     bless $this, $class;
 
@@ -37,6 +38,10 @@ sub argumentsNode {
     my $pairs = $request->parameters();
     for my $key (keys %$pairs) {
         for my $value ($pairs->get_all($key)) {
+            if ($key eq 'xml') {
+                $this->{areno}->xmlmode($value);
+            }
+
             my $itemNode = new XML::LibXML::Element('item');
             $itemNode->setAttribute('name', $key);
             $itemNode->appendText($value);

@@ -15,26 +15,38 @@ sub new {
 
     my $this = {
         http => {
-            status => 200,
-            headers => [
-                'Content-Type' => 'text/html',
-            ],
-            body => [],
+            status  => 200,
+            headers => [],
+            body    => [],
         },
         sites     => {},
         transform => new Areno::Transform(),
+        xmlmode   => 0,
     };
     bless $this, $class;
     
+    $this->start();
     $this->init();
     
     return $this;
 }
 
+sub start {
+    my ($this) = @_;
+
+    $this->read_sites();
+}
+
 sub init {
     my ($this) = @_;
     
-    $this->read_sites();
+    $this->{http} = {
+        status  => 200,
+        headers => [],
+        body    => [],
+    };
+
+    $this->{xmlmode} = 0;
 }
 
 sub read_sites {
@@ -108,10 +120,10 @@ sub new_doc {
     my $root = $dom->createElement('page');
     $dom->setDocumentElement($root);
 
-    my $manifest = new Areno::Manifest($env);
+    my $manifest = new Areno::Manifest($this, $env);
     $root->appendChild($manifest->node());
 
-    my $content = new Areno::Content();
+    my $content = new Areno::Content($this, $env);
     $root->appendChild($content->node());
 
     return {
@@ -122,10 +134,23 @@ sub new_doc {
     };
 }
 
+sub xmlmode {
+    my ($this, $value) = @_;
+    
+    $this->{xmlmode} = $value;
+}
+
 sub transform {
     my ($this, $page) = @_;
 
-    $this->{http}{body} = [$this->{transform}->transform($this->{doc}, $page)];
+    unless ($this->{xmlmode}) {
+        push @{$this->{http}{headers}}, ('Content-Type', 'text/html');
+        $this->{http}{body} = [$this->{transform}->transform($this->{doc}, $page)];
+    }
+    else {
+        push @{$this->{http}{headers}}, ('Content-Type', 'text/xml');
+        $this->{http}{body} = [$this->{doc}{dom}->toString()];
+    }
 }
 
 1;

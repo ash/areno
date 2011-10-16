@@ -7,10 +7,11 @@ use base 'Areno::Node';
 use XML::LibXML;
 
 sub new {
-    my ($class) = @_;
+    my ($class, $areno, $env) = @_;
     
     my $this = {
-        node => new XML::LibXML::Element('content'),
+        areno => $areno,
+        node  => new XML::LibXML::Element('content'),
     };
     bless $this, $class;
 

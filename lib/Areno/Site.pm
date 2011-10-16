@@ -37,9 +37,7 @@ sub import_site_structure {
             my $package = require $item_path;
             $package->import();
             my $page = $package->new($this);
-
             $this->{pages}{$page} = $page;
-#            $this->{transform}->set_transform($package, $domain, $package->transform());
         }
         elsif (-d $item_path && $item =~ /\w/) {
             $this->import_dir("$path/$item");
