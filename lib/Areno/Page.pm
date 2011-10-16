@@ -11,6 +11,19 @@ sub import {
     SUPER->import(@_);
 }
 
+sub new {
+    my ($class, %args) = @_;
+    
+    my $this = {
+        class => $class,
+        site  => $args{site},
+        path  => $args{path},
+    };
+    bless $this, $class;
+    
+    return $this;
+}
+
 sub route {
     qr{};
 }
@@ -21,6 +34,18 @@ sub transform {
 
 sub run {
     
+}
+
+sub site {
+    my ($this) = @_;
+    
+    return $this->{site};
+}
+
+sub classname {
+    my ($this) = @_;
+    
+    return $this->{class};
 }
 
 1;

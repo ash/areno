@@ -23,8 +23,8 @@ sub set_transform {
 
 sub transform {
     my ($this, $doc, $page) = @_;
-    
-    my $style_source = XML::LibXML->load_xml(location => $this->{transform}{default}{$page});
+
+    my $style_source = XML::LibXML->load_xml(location => $this->{transform}{$page->site()}{$page->classname()});
 
     my $xslt = new XML::LibXSLT();
     my $stylesheet = $xslt->parse_stylesheet($style_source);
