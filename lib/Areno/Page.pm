@@ -12,12 +12,10 @@ sub import {
 }
 
 sub new {
-    my ($class, %args) = @_;
+    my ($class, $site) = @_;
     
     my $this = {
-        class => $class,
-        site  => $args{site},
-        path  => $args{path},
+        site  => $site,
     };
     bless $this, $class;
     
@@ -40,12 +38,6 @@ sub site {
     my ($this) = @_;
     
     return $this->{site};
-}
-
-sub classname {
-    my ($this) = @_;
-    
-    return $this->{class};
 }
 
 1;

@@ -7,12 +7,12 @@ use Plack::Request;
 
 use Areno::Manifest;
 use Areno::Content;
-use Areno::Dispatch;
+use Areno::Site;
 use Areno::Transform;
 
 sub new {
     my ($class) = @_;
-    
+
     my $this = {
         http => {
             status => 200,
@@ -21,7 +21,7 @@ sub new {
             ],
             body => [],
         },
-        dispatch  => new Areno::Dispatch(),
+        sites     => {},
         transform => new Areno::Transform(),
     };
     bless $this, $class;
@@ -45,33 +45,12 @@ sub read_sites {
 
     opendir my($sites), $sites_path;
     die "No 'sites' directory found at $base_path" unless $sites;
-    my @sites = grep /\w/, grep {-d "$sites_path/$_"} readdir $sites;
+    my @domains = grep /\w/, grep {-d "$sites_path/$_"} readdir $sites;
     close $sites;
-    die "No sites found in $sites_path" unless @sites;
+    die "No sites found in $sites_path" unless @domains;
     
-    for my $site (@sites) {
-        $this->import_dir($site, "$sites_path/$site");
-    }
-}
-
-sub import_dir {
-    my ($this, $site, $path) = @_;
-
-    opendir my($dir), $path;
-    my @dir = readdir $dir;
-    closedir $dir;
-
-    for my $item (@dir) {
-        my $item_path = "$path/$item";
-        if ($item_path =~ /\.pm$/ && -f $item_path) {
-            my $package = require $item_path;
-            $package->import();
-            $this->{dispatch}->set_route($package, $site, $package->route());
-            $this->{transform}->set_transform($package, $site, $package->transform());
-        }
-        elsif (-d $item_path && $item =~ /\w/) {
-            $this->import_dir("$path/$item");
-        }
+    for my $domain (@domains) {
+        $this->{sites}{$domain} = new Areno::Site($domain, $sites_path);
     }
 }
 
@@ -98,9 +77,28 @@ sub run {
 
     $this->{doc} = $this->new_doc($env);
     
-    my $page = $this->{dispatch}->dispatch($env);
+    my $site = $this->dispatch($this->{sites}, $env);
+    my $page = $site->dispatch($env);
+
     $page->run($this->{doc});
     $this->transform($page);
+}
+
+sub dispatch {
+    my ($this, $env) = @_;
+    
+    my $sites = $this->{sites};
+
+    my $server_name = $env->{SERVER_NAME} || 'default';
+    $server_name =~ s/^localhost$/default/;
+
+    if (exists $sites->{$server_name}) {
+        return $sites->{$server_name};
+    }
+    else {
+        warn "Non-existing site '$server_name' requested\n";
+        return $sites->{default};
+    }
 }
 
 sub new_doc {
