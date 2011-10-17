@@ -12,17 +12,22 @@ sub new {
     };
     bless $this, $class;
     
-    $this->init($this->{request});
+    $this->init($this->{request}, $env);
 
     return $this;
 }
 
 sub init {
-    my ($this, $request) = @_;
+    my ($this, $request, $env) = @_;
     
-    $this->{arguments} = $this->read_arguments($request);
-    $this->{cookies} = $request->cookies();
-    $this->{user_agent} = $request->user_agent();
+    $this->{arguments}    = $this->read_arguments($request);
+    $this->{cookies}      = $request->cookies();
+    $this->{user_agent}   = $request->user_agent();
+    $this->{path}         = $env->{PATH_INFO};
+    $this->{http_referer} = $env->{HTTP_REFERER};
+    $this->{remote_addr}  = $env->{REMOTE_ADDR};
+    $this->{server_port}  = $env->{SERVER_PORT};
+    $this->{server_name}  = $env->{SERVER_NAME};
 }
 
 sub read_arguments {

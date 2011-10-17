@@ -27,6 +27,14 @@ sub init {
     $this->{node}->appendChild($this->argumentsNode($request));
     $this->{node}->appendChild($this->cookiesNode($request));
     $this->{node}->appendChild($this->useragentNode($request));
+    
+    for my $name (qw(path http_referer remote_addr server_port server_name)) {
+        my $node_name = $name;
+        $node_name =~ s{_}{-};
+        my $node = new XML::LibXML::Element($node_name);
+        $node->appendText($request->{$name});
+        $this->{node}->appendChild($node);
+    }
 }
 
 sub argumentsNode {
