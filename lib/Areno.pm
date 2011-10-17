@@ -22,7 +22,6 @@ sub new {
         },
         sites     => {},
         transform => new Areno::Transform(),
-        xmlmode   => 0,
     };
     bless $this, $class;
     
@@ -46,8 +45,6 @@ sub init {
         headers => [],
         body    => [],
     };
-
-    $this->{xmlmode} = 0;
 }
 
 sub read_sites {
@@ -136,16 +133,10 @@ sub new_doc {
     };
 }
 
-sub xmlmode {
-    my ($this, $value) = @_;
-    
-    $this->{xmlmode} = $value;
-}
-
 sub transform {
     my ($this, $page) = @_;
 
-    unless ($this->{xmlmode}) {
+    unless ($this->{request}->argument('xml')) {
         push @{$this->{http}{headers}}, ('Content-Type', 'text/html');
         $this->{http}{body} = [$this->{transform}->transform($this->{doc}, $page)];
     }
