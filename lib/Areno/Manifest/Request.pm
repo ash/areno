@@ -7,7 +7,7 @@ use base 'Areno::Node';
 use XML::LibXML;
 
 sub new {
-    my ($class, $areno, $env) = @_;
+    my ($class, $areno) = @_;
     
     my $this = {
         areno => $areno,
@@ -15,7 +15,7 @@ sub new {
     };
     bless $this, $class;
 
-    $this->init($env);
+    $this->init($areno);
 
     return $this;
 }
@@ -23,8 +23,7 @@ sub new {
 sub init {
     my ($this, $env) = @_;
     
-    my $request = new Plack::Request($env);
-
+    my $request = $this->{areno}->request();
     $this->{node}->appendChild($this->argumentsNode($request));
     $this->{node}->appendChild($this->cookiesNode($request));
     $this->{node}->appendChild($this->useragentNode($request));
@@ -32,23 +31,20 @@ sub init {
 
 sub argumentsNode {
     my ($this, $request) = @_;
-    
+
     my $argumentsNode = new XML::LibXML::Element('arguments');
 
-    my $pairs = $request->parameters();
-    for my $key (keys %$pairs) {
-        for my $value ($pairs->get_all($key)) {
-            if ($key eq 'xml') {
-                $this->{areno}->xmlmode($value);
-            }
-
+    my @arguments = $request->arguments();
+    for my $name (@arguments) {
+        my $values = $request->margument($name);
+        for my $value (@$values) {
             my $itemNode = new XML::LibXML::Element('item');
-            $itemNode->setAttribute('name', $key);
+            $itemNode->setAttribute('name', $name);
             $itemNode->appendText($value);
             $argumentsNode->appendChild($itemNode);
         }
     }
-    
+
     return $argumentsNode;
 }
 
@@ -57,11 +53,11 @@ sub cookiesNode {
     
     my $cookiesNode = new XML::LibXML::Element('cookies');
     
-    my $pairs = $request->cookies();
-    for my $key (keys %$pairs) {
+    my @cookies = $request->cookies();    
+    for my $name (@cookies) {
         my $itemNode = new XML::LibXML::Element('item');
-        $itemNode->setAttribute('name', $key);
-        $itemNode->appendText($pairs->{$key});
+        $itemNode->setAttribute('name', $name);
+        $itemNode->appendText($request->cookie($name));
         $cookiesNode->appendChild($itemNode);
     }
     
@@ -70,10 +66,10 @@ sub cookiesNode {
 
 sub useragentNode {
     my ($this, $request) = @_;
-    
+
     my $useragentNode = new XML::LibXML::Element('user-agent');    
     $useragentNode->appendText($request->user_agent());
-    
+
     return $useragentNode;
 }
 

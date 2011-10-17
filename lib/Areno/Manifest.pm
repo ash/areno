@@ -16,16 +16,16 @@ sub new {
     };
     bless $this, $class;
 
-    $this->init($env);
+    $this->init();
 
     return $this;
 }
 
 sub init {
-    my ($this, $env) = @_;
+    my ($this) = @_;
     
     $this->{node}->appendChild($this->dateNode());
-    $this->{node}->appendChild((new Areno::Manifest::Request($this->{areno}, $env))->node());
+    $this->{node}->appendChild((new Areno::Manifest::Request($this->{areno}))->node());
 }
 
 sub dateNode {

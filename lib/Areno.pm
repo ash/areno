@@ -5,6 +5,7 @@ use strict;
 use Cwd;
 use Plack::Request;
 
+use Areno::Request;
 use Areno::Manifest;
 use Areno::Content;
 use Areno::Site;
@@ -87,6 +88,7 @@ sub body {
 sub run {
     my ($this, $env) = @_;
 
+    $this->{request} = new Areno::Request($env);
     $this->{doc} = $this->new_doc($env);
     
     my $site = $this->dispatch($this->{sites}, $env);
@@ -151,6 +153,12 @@ sub transform {
         push @{$this->{http}{headers}}, ('Content-Type', 'text/xml');
         $this->{http}{body} = [$this->{doc}{dom}->toString()];
     }
+}
+
+sub request {
+    my ($this) = @_;
+    
+    return $this->{request};
 }
 
 1;
