@@ -16,4 +16,10 @@
     </html>
 </xsl:template>
 
+<xsl:template match="content/test">
+    <p>
+        <xsl:value-of select="text()"/>
+    </p>
+</xsl:template>
+
 </xsl:stylesheet>

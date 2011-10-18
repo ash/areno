@@ -128,8 +128,9 @@ sub new_doc {
     return {
         dom      => $dom,
         root     => $root,
-        manifest => $manifest,
-        content  => $content,
+        manifest => $manifest->node(),
+        content  => $content->node(),
+        request  => $this->{request},
     };
 }
 
