@@ -35,7 +35,6 @@ sub import_site_structure {
         my $item_path = "$path/$item";
         if ($item_path =~ /\.pm$/ && -f $item_path) {
             my $package = require $item_path;
-            $package->import();
             my $page = $package->new($this);
             $this->{pages}{$page} = $page;
         }
