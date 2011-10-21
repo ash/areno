@@ -8,17 +8,15 @@ sub route {
 }
 
 sub run {
-    my ($this, $doc) = @_;
+    my ($this) = @_;
     
-    $this->test($doc);
+    $this->test();
 }
 
 sub test {
-    my ($this, $doc) = @_;
+    my ($this) = @_;
 
-    my $testNode = new XML::LibXML::Element('test');
-    $testNode->appendText(int rand(100));
-    $doc->{content}->appendChild($testNode);
+    my $testNode = $this->contentTextChild('test', int rand 100);
 }
 
 __PACKAGE__;

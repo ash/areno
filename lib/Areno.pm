@@ -91,7 +91,8 @@ sub run {
     my $site = $this->dispatch($this->{sites}, $env);
     my $page = $site->dispatch($env);
 
-    $page->run($this->{doc});
+    $page->init($this->{doc});
+    $page->run();
     $this->transform($page);
 }
 
