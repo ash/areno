@@ -88,7 +88,7 @@ sub run {
     $this->{request} = new Areno::Request($env);
     $this->{doc} = $this->new_doc($env);
 
-    my $site = $this->dispatch($this->{sites}, $env);
+    my $site = $this->dispatch($env);
     my $page = $site->dispatch($env);
 
     $page->init($this->{doc});
