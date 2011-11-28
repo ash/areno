@@ -101,9 +101,15 @@ sub dispatch {
     
     my $sites = $this->{sites};
 
-    my $server_name = $env->{SERVER_NAME} || 'default';
-    $server_name =~ s/^localhost$/default/;
-
+    my $server_name = $env->{SERVER_NAME};
+    if ($server_name) {
+        $server_name =~ s/:\d+$//;
+        $server_name =~ s/^localhost$/default/;
+    }
+    else {
+        $server_name = 'default';
+    }
+    
     if (exists $sites->{$server_name}) {
         return $sites->{$server_name};
     }
