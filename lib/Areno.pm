@@ -101,7 +101,7 @@ sub dispatch {
     
     my $sites = $this->{sites};
 
-    my $server_name = $env->{SERVER_NAME};
+    my $server_name = $env->{HTTP_HOST};
     if ($server_name) {
         $server_name =~ s/:\d+$//;
         $server_name =~ s/^localhost$/default/;
