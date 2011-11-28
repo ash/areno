@@ -1,4 +1,4 @@
-package Areno::Default;
+package Areno::Localhost::Default;
 
 use strict;
 use base 'Areno::Page';

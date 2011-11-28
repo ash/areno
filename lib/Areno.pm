@@ -87,7 +87,7 @@ sub run {
 
     $this->{request} = new Areno::Request($env);
     $this->{doc} = $this->new_doc($env);
-    
+
     my $site = $this->dispatch($this->{sites}, $env);
     my $page = $site->dispatch($env);
 
@@ -98,24 +98,23 @@ sub run {
 
 sub dispatch {
     my ($this, $env) = @_;
-    
+
     my $sites = $this->{sites};
 
     my $server_name = $env->{HTTP_HOST};
     if ($server_name) {
         $server_name =~ s/:\d+$//;
-        $server_name =~ s/^localhost$/default/;
     }
     else {
-        $server_name = 'default';
+        $server_name = 'localhost';
     }
-    
+
     if (exists $sites->{$server_name}) {
         return $sites->{$server_name};
     }
     else {
         warn "Non-existing site '$server_name' requested\n";
-        return $sites->{default};
+        return $sites->{localhost};
     }
 }
 

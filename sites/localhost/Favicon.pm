@@ -1,4 +1,4 @@
-package Areno::Favicon;
+package Areno::Localhost::Favicon;
 
 use strict;
 use base 'Areno::Page';

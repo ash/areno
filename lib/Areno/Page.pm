@@ -27,7 +27,7 @@ sub route {
 }
 
 sub transform {
-    'default'
+    'localhost'
 }
 
 sub init {
