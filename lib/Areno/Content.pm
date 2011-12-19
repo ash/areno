@@ -8,7 +8,7 @@ use XML::LibXML;
 
 sub new {
     my ($class, $areno, $env) = @_;
-    
+
     my $this = {
         areno => $areno,
         node  => new XML::LibXML::Element('content'),

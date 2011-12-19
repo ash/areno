@@ -4,21 +4,21 @@ use strict;
 
 sub new {
     my ($class, $domain, $path) = @_;
-    
+
     my $this = {
         domain => $domain,
         pages  => {},
     };
     bless $this, $class;
-    
+
     $this->import_site_structure($domain, $path);
-    
+
     return $this;
 }
 
 sub domain {
     my ($this) = @_;
-    
+
     return $this->{domain};
 }
 

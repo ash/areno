@@ -32,7 +32,7 @@ sub transform {
 
 sub init {
     my ($this, $doc) = @_;
-    
+
     $this->{doc} = $doc;
 }
 
@@ -42,7 +42,7 @@ sub run {
 
 sub site {
     my ($this) = @_;
-    
+
     return $this->{site};
 }
 

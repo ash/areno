@@ -6,11 +6,11 @@ use XML::LibXSLT;
 
 sub new {
     my ($class) = @_;
-    
+
     my $this = {
     };
     bless $this, $class;
-    
+
     return $this;
 }
 
