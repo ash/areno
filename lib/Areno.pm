@@ -24,10 +24,10 @@ sub new {
         transform => new Areno::Transform(),
     };
     bless $this, $class;
-    
+
     $this->start();
     $this->init();
-    
+
     return $this;
 }
 
@@ -39,7 +39,7 @@ sub start {
 
 sub init {
     my ($this) = @_;
-    
+
     $this->{http} = {
         status  => 200,
         headers => [],
@@ -58,7 +58,7 @@ sub read_sites {
     my @domains = grep /\w/, grep {-d "$sites_path/$_"} readdir $sites;
     close $sites;
     die "No sites found in $sites_path" unless @domains;
-    
+
     for my $domain (@domains) {
         $this->{sites}{$domain} = new Areno::Site($domain, $sites_path);
     }
@@ -66,19 +66,19 @@ sub read_sites {
 
 sub status {
     my ($this) = @_;
-    
+
     return $this->{http}{status};
 }
 
 sub headers {
     my ($this) = @_;
-    
+
     return $this->{http}{headers};
 }
 
 sub body {
     my ($this) = @_;
-    
+
     return $this->{http}{body};
 }
 
@@ -120,7 +120,7 @@ sub dispatch {
 
 sub new_doc {
     my ($this, $env) = @_;
-    
+
     my $dom = (new XML::LibXML)->createDocument('1.0', 'UTF-8');
     my $root = $dom->createElement('page');
     $dom->setDocumentElement($root);
@@ -155,7 +155,7 @@ sub transform {
 
 sub request {
     my ($this) = @_;
-    
+
     return $this->{request};
 }
 

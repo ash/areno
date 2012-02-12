@@ -42,7 +42,7 @@ sub run {
 
 sub site {
     my ($this) = @_;
-    
+
     return $this->{site};
 }
 

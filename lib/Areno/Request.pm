@@ -6,12 +6,12 @@ use Plack::Request;
 
 sub new {
     my ($class, $env) = @_;
-    
+
     my $this = {
         request => new Plack::Request($env),
     };
     bless $this, $class;
-    
+
     $this->init($this->{request}, $env);
 
     return $this;
@@ -19,7 +19,7 @@ sub new {
 
 sub init {
     my ($this, $request, $env) = @_;
-    
+
     $this->{arguments}    = $this->read_arguments($request);
     $this->{cookies}      = $request->cookies();
     $this->{user_agent}   = $request->user_agent();
@@ -38,7 +38,7 @@ sub read_arguments {
     for my $key (keys %$pairs) {
         $ret{$key} = [$pairs->get_all($key)];
     }
-    
+
     return \%ret;
 }
 
@@ -52,31 +52,31 @@ sub argument {
     my ($this, $name) = @_;
 
     my $values = $this->{arguments}{$name};
-    
+
     return $values ? $values->[-1] : undef;
 }
 
 sub margument {
     my ($this, $name) = @_;
-    
+
     return $this->{arguments}{$name};
 }
 
 sub cookies {
     my ($this) = @_;
-    
+
     return keys %{$this->{cookies}};
 }
 
 sub cookie {
     my ($this, $name) = @_;
-    
+
     return $this->{cookies}{$name};
 }
 
 sub user_agent {
     my ($this) = @_;
-    
+
     return $this->{user_agent};
 }
 

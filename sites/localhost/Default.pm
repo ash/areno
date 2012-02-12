@@ -9,7 +9,7 @@ sub route {
 
 sub run {
     my ($this) = @_;
-    
+
     $this->test();
 }
 

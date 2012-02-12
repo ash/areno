@@ -9,7 +9,7 @@ use Areno::Manifest::Request;
 
 sub new {
     my ($class, $areno, $env) = @_;
-    
+
     my $this = {
         areno => $areno,
         node  => new XML::LibXML::Element('manifest'),
@@ -23,7 +23,7 @@ sub new {
 
 sub init {
     my ($this) = @_;
-    
+
     $this->{node}->appendChild($this->dateNode());
     $this->{node}->appendChild((new Areno::Manifest::Request($this->{areno}))->node());
 }
@@ -47,7 +47,7 @@ sub dateNode {
             [sec   => $sec],
             [wday  => $wday]
     );
-    
+
     return $dateNode;
 }
 
