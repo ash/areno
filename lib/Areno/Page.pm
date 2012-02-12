@@ -32,7 +32,7 @@ sub transform {
 
 sub init {
     my ($this, $doc) = @_;
-    
+
     $this->{doc} = $doc;
 }
 
@@ -92,6 +92,39 @@ sub manifestTextChild {
     $newNode->appendText($text);
 
     return $newNode;
+}
+
+sub newChild {
+    my ($this, $node, $name) = @_;
+    
+    my $newNode = new XML::LibXML::Element($name);
+    $node->appendChild($newNode);
+
+    return $newNode;
+}
+
+sub newTextChild {
+    my ($this, $node, $name, $text) = @_;
+    
+    my $newNode = new XML::LibXML::Element($name);
+    $node->appendChild($newNode);
+    $newNode->appendText($text);
+    
+    return $newNode;
+}
+
+sub param {
+    my ($this, $name) = @_;
+    
+    my $list = $this->{doc}{request}{arguments}{$name} || [];
+
+    return @$list ? $$list[0] : undef;   
+}
+
+sub cookie {
+    my ($this, $name) = @_;
+    
+    return $this->{doc}{request}{cookies}{$name};
 }
 
 1;

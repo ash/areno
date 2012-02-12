@@ -50,6 +50,7 @@ sub dispatch {
     my $path_info = $env->{PATH_INFO} || '/';
 
     my $pages = $this->{pages};
+
     my @route = grep {$path_info ~~ $pages->{$_}->route()} keys %$pages;
 
     warn("More than one possible route for $$this{domain}$path_info: " . join(',', @route) . "\n") if @route > 1;
