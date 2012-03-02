@@ -7,10 +7,11 @@ sub new {
     
     my $this = {
         domain => $domain,
+        path   => $path,
         pages  => {},
     };
     bless $this, $class;
-    
+
     $this->import_site_structure($domain, $path);
     
     return $this;
@@ -20,6 +21,12 @@ sub domain {
     my ($this) = @_;
     
     return $this->{domain};
+}
+
+sub path {
+    my ($this) = @_;
+    
+    return $this->{path};
 }
 
 sub import_site_structure {

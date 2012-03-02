@@ -18,7 +18,7 @@ sub transform {
     my ($this, $doc, $page) = @_;
 
     my $style_source = XML::LibXML->load_xml(
-                        location => 'layout/' .
+                        location => $page->site()->path() . '/../layout/' .
                                     $page->site()->domain() . '/' .
                                     $page->transform() .
                                     '.xslt'
