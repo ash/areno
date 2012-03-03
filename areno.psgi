@@ -1,5 +1,6 @@
 use strict;
 
+use lib 'lib';
 use Areno;
 
 my $areno = new Areno();
