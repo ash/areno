@@ -99,10 +99,12 @@ sub manifestTextChild {
 }
 
 sub newChild {
-    my ($this, $node, $name) = @_;
+    my ($this, $node, $name, $attributes, $text) = @_;
     
     my $newNode = new XML::LibXML::Element($name);
     $node->appendChild($newNode);
+    
+    _setNodeValues($newNode, $attributes, $text);
 
     return $newNode;
 }
@@ -115,6 +117,12 @@ sub newTextChild {
     $newNode->appendText($text);
     
     return $newNode;
+}
+
+sub newItem {
+    my ($this, $node, $attributes, $text) = @_;
+    
+    $this->newChild($node, 'item', $attributes, $text);
 }
 
 sub param {
