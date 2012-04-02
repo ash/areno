@@ -53,10 +53,12 @@ sub contnet {
 }
 
 sub contentChild {
-    my ($this, $name) = @_;
+    my ($this, $name, $attributes, $text) = @_;
 
     my $newNode = new XML::LibXML::Element($name);
     $this->{doc}{content}->appendChild($newNode);
+
+    _setNodeValues($newNode, $attributes, $text);
 
     return $newNode;
 }
@@ -77,10 +79,12 @@ sub manfest {
 }
 
 sub manifestChild {
-    my ($this, $name) = @_;
+    my ($this, $name, $attributes, $text) = @_;
 
     my $newNode = new XML::LibXML::Element($name);
     $this->{doc}{manifest}->appendChild($newNode);
+
+    _setNodeValues($newNode, $attributes, $text);
 
     return $newNode;
 }
@@ -125,6 +129,20 @@ sub cookie {
     my ($this, $name) = @_;
     
     return $this->{doc}{request}{cookies}{$name};
+}
+
+sub _setNodeValues {
+    my ($node, $attributes, $text) = @_;
+    
+    if (defined $attributes) {
+        for my $attribute (keys %$attributes) {
+            $node->setAttribute($attribute, $attributes->{$attribute});
+        }
+    }
+
+    if (defined $text) {
+        $node->appendText($text);
+    }
 }
 
 1;
