@@ -129,8 +129,12 @@ sub param {
     my ($this, $name) = @_;
     
     my $list = $this->{doc}{request}{arguments}{$name} || [];
-
-    return @$list ? $$list[0] : undef;   
+    
+    return
+        ! wantarray
+        ? (@$list ? $$list[0] : undef)
+        : (@$list ? @$list : ())
+        ;
 }
 
 sub cookie {
