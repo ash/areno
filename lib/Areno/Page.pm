@@ -137,6 +137,12 @@ sub param {
         ;
 }
 
+sub params {
+    my ($this) = @_;
+    
+    return keys %{$this->{doc}{request}{arguments}};
+}
+
 sub cookie {
     my ($this, $name) = @_;
     
