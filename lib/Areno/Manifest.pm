@@ -38,6 +38,7 @@ sub dateNode {
     $dateNode->setAttribute('rfc', POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",
                                    $sec, $min, $hour, $mday,
                                    $mon, $year, $wday, $yday, $isdst));
+    $dateNode->setAttribute('yyyymmdd', sprintf("%i-%02i-%02i", $year + 1900, $mon + 1, $mday));
     $dateNode->setAttribute($$_[0], $$_[1]) for (
             [year  => 1900 + $year],
             [day   => $mday],
