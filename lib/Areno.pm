@@ -100,6 +100,8 @@ sub run {
     $page->init($this->{doc});
     $page->run();
     $this->transform($page);
+
+    push @{$this->{http}{headers}}, @{$page->get_headers()};
 }
 
 sub dispatch {
@@ -149,13 +151,19 @@ sub new_doc {
 sub transform {
     my ($this, $page) = @_;
 
+    my $content_type;
     unless ($this->{request}->argument('xml')) {
-        push @{$this->{http}{headers}}, ('Content-Type', 'text/html');
+        $content_type = 'text/html';
         $this->{http}{body} = [$this->{transform}->transform($this->{doc}, $page)];
     }
     else {
-        push @{$this->{http}{headers}}, ('Content-Type', 'text/xml');
+        $content_type = 'text/xml';
         $this->{http}{body} = [$this->{doc}{dom}->toString()];
+    }
+
+    my %headers = @{$this->{http}{headers}};
+    unless ($headers{'Content-Type'}) {
+        push @{$this->{http}{headers}}, ('Content-Type', $content_type);
     }
 }
 

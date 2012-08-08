@@ -15,7 +15,8 @@ sub new {
     my ($class, $site) = @_;
 
     my $this = {
-        site => $site,
+        site    => $site,
+        headers => [],
     };
     bless $this, $class;
 
@@ -147,6 +148,18 @@ sub cookie {
     my ($this, $name) = @_;
     
     return $this->{doc}{request}{cookies}{$name};
+}
+
+sub header {
+    my ($this, @pairs) = @_;
+
+    push @{$this->{headers}}, @pairs;
+}
+
+sub get_headers {
+    my ($this) = @_;
+
+    return $this->{headers};
 }
 
 sub _setNodeValues {
