@@ -27,7 +27,7 @@ sub transform {
     my $dom = $doc->{dom};
 
     my $xslt = new XML::LibXSLT();
-    my $ret;
+    my $stylesheet;
     for my $step (0 .. $#instructions) {
         my $style_source = XML::LibXML->load_xml(
                             location => $page->site()->path() . '/../layout/' .
@@ -36,13 +36,11 @@ sub transform {
                                         '.xslt'
                         );
 
-        my $stylesheet = $xslt->parse_stylesheet($style_source);
+        $stylesheet = $xslt->parse_stylesheet($style_source);
         $dom = $stylesheet->transform($dom);
-
-        $ret = $stylesheet->output_as_bytes($dom) if $step == $#instructions;
     }
 
-    return $ret;
+    return $stylesheet->output_as_bytes($dom);
 }
 
 1;
