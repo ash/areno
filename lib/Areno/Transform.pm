@@ -17,18 +17,32 @@ sub new {
 sub transform {
     my ($this, $doc, $page) = @_;
 
-    my $style_source = XML::LibXML->load_xml(
-                        location => $page->site()->path() . '/../layout/' .
-                                    $page->site()->domain() . '/' .
-                                    $page->transform() .
-                                    '.xslt'
-                    );
+    my $instructions = $page->transform();
+    my @instructions = 
+        ! (ref $instructions eq "ARRAY")
+        ? ($instructions)
+        : @$instructions
+        ;
+
+    my $dom = $doc->{dom};
 
     my $xslt = new XML::LibXSLT();
-    my $stylesheet = $xslt->parse_stylesheet($style_source);
-    my $result = $stylesheet->transform($doc->{dom});
+    my $ret;
+    for my $step (0 .. $#instructions) {
+        my $style_source = XML::LibXML->load_xml(
+                            location => $page->site()->path() . '/../layout/' .
+                                        $page->site()->domain() . '/' .
+                                        $instructions[$step] .
+                                        '.xslt'
+                        );
 
-    return $stylesheet->output_as_bytes($result);
+        my $stylesheet = $xslt->parse_stylesheet($style_source);
+        $dom = $stylesheet->transform($dom);
+
+        $ret = $stylesheet->output_as_bytes($dom) if $step == $#instructions;
+    }
+
+    return $ret;
 }
 
 1;
