@@ -34,6 +34,7 @@ sub transform {
 sub init {
     my ($this, $doc) = @_;
 
+    $this->{headers} = [];
     $this->{doc} = $doc;
 }
 
