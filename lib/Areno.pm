@@ -152,7 +152,11 @@ sub transform {
     my ($this, $page) = @_;
 
     my $content_type;
-    unless ($this->{request}->argument('xml')) {
+    if (exists $page->{body}) {
+        $content_type = 'text/plain';
+        $this->{http}{body} = [$page->{body}];
+    }
+    elsif (!($this->{request}->argument('xml'))) {
         $content_type = 'text/html';
         $this->{http}{body} = [$this->{transform}->transform($this->{doc}, $page)];
     }

@@ -151,10 +151,16 @@ sub cookie {
     return $this->{doc}{request}{cookies}{$name};
 }
 
-sub header {
+sub set_header {
     my ($this, @pairs) = @_;
 
     push @{$this->{headers}}, @pairs;
+}
+
+sub set_body {
+    my ($this, $body) = @_;
+
+    $this->{body} = $body;
 }
 
 sub get_headers {
