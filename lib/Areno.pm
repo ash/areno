@@ -7,6 +7,7 @@ use Plack::Request;
 
 use Areno::Request;
 use Areno::Manifest;
+use Areno::Manifest::Stash;
 use Areno::Content;
 use Areno::Site;
 use Areno::Transform;
@@ -22,6 +23,7 @@ sub new {
         },
         sites     => {},
         transform => new Areno::Transform(),
+        stash     => {},
     };
     bless $this, $class;
     
@@ -65,7 +67,7 @@ sub read_sites {
         die "No sites found in $sites_path" unless @domains;
         
         for my $domain (@domains) {
-            $this->{sites}{$domain} = new Areno::Site($domain, $sites_path);
+            $this->{sites}{$domain} = new Areno::Site($this, $domain, $sites_path);
         }
     }
 }
@@ -92,13 +94,14 @@ sub run {
     my ($this, $env) = @_;
 
     $this->{request} = new Areno::Request($env);
-    $this->{doc} = $this->new_doc($env);
+    $this->{doc}     = $this->new_doc($env);
 
     my $site = $this->dispatch($env);
     my $page = $site->dispatch($env);
 
     $page->init($this->{doc});
     $page->run();
+    $this->post_init($page);
     $this->transform($page);
 
     push @{$this->{http}{headers}}, @{$page->get_headers()};
@@ -124,6 +127,15 @@ sub dispatch {
         warn "Non-existing site '$server_name' requested\n";
         return $sites->{localhost};
     }
+}
+
+sub post_init {
+    my $this = shift;
+    my ($page) = @_;
+
+    my $manifest = $page->manifest;
+    my $stash_obj = Areno::Manifest::Stash->new($this);
+    $manifest->appendChild($stash_obj->node);
 }
 
 sub new_doc {
@@ -176,5 +188,12 @@ sub request {
     
     return $this->{request};
 }
+
+sub stash {
+    my ($this) = @_;
+    
+    return $this->{stash};
+}
+
 
 1;
