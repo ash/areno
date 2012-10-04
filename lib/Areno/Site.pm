@@ -3,9 +3,10 @@ package Areno::Site;
 use strict;
 
 sub new {
-    my ($class, $domain, $path) = @_;
+    my ($class, $areno, $domain, $path) = @_;
     
     my $this = {
+        areno  => $areno,
         domain => $domain,
         path   => $path,
         pages  => {},
@@ -42,7 +43,7 @@ sub import_site_structure {
         my $item_path = "$path/$item";
         if ($item_path =~ /\.pm$/ && -f $item_path) {
             my $package = require $item_path;
-            my $page = $package->new($this);
+            my $page = $package->new($this, $this->{areno});
             $this->{pages}{$page} = $page;
         }
         elsif (-d $item_path && $item =~ /\w/) {
