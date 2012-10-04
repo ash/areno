@@ -12,10 +12,11 @@ sub import {
 }
 
 sub new {
-    my ($class, $site) = @_;
+    my ($class, $site, $areno) = @_;
 
     my $this = {
         site    => $site,
+        areno   => $areno,
         headers => [],
     };
     bless $this, $class;
@@ -74,7 +75,7 @@ sub contentTextChild {
     return $newNode;
 }
 
-sub manfest {
+sub manifest {
     my ($this) = @_;
 
     return $this->{doc}{manifest};
@@ -167,6 +168,26 @@ sub get_headers {
     my ($this) = @_;
 
     return $this->{headers};
+}
+
+sub get_stash {
+    my ($this) = @_;
+    my $stash = $this->{areno}->stash;
+
+    return $stash;
+}
+
+sub set_stash_var {
+    my $this  = shift;
+    my ($key, $value) = @_;
+    warn "value in STASH must be SCALAR, not ref (it might be allowed in future)"
+        if ref $value;
+
+    my $stash = $this->{areno}->stash;
+    my $prev_value = $stash->{$key};
+    $stash->{$key} = $value;
+
+    return $prev_value;
 }
 
 sub _setNodeValues {
