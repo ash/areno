@@ -31,23 +31,29 @@ sub path {
 }
 
 sub import_site_structure {
-    my ($this, $domain, $path) = @_;
+    my $this = shift; 
+    my ($domain, $path) = @_;
 
-    $path = "$path/$domain";
+    $this->import_dir("$path/$domain");
+}
 
-    opendir my($dir), $path;
-    my @dir = readdir $dir;
-    closedir $dir;
+sub import_dir {
+    my $this  = shift;
+    my ($dir) = @_;
 
-    for my $item (@dir) {
-        my $item_path = "$path/$item";
+    opendir my($dir_fh), $dir or die "can't read dir $dir: $!";
+    my @dirs = readdir $dir_fh;
+    closedir $dir_fh;
+
+    for my $item (@dirs) {
+        my $item_path = "$dir/$item";
         if ($item_path =~ /\.pm$/ && -f $item_path) {
             my $package = require $item_path;
             my $page = $package->new($this, $this->{areno});
             $this->{pages}{$page} = $page;
         }
         elsif (-d $item_path && $item =~ /\w/) {
-            $this->import_dir("$path/$item");
+            $this->import_dir("$dir/$item");
         }
     }
 }
