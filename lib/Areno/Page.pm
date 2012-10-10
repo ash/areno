@@ -164,6 +164,12 @@ sub set_body {
     $this->{body} = $body;
 }
 
+sub get_upload {
+    my ($this, $name) = @_;
+
+    return $this->{doc}{request}{request}->upload($name);
+}
+
 sub get_headers {
     my ($this) = @_;
 
