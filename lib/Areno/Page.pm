@@ -49,6 +49,12 @@ sub site {
     return $this->{site};
 }
 
+sub request_uri {
+    my ($this) = @_;
+
+    return $this->{areno}{request}{path};
+}
+
 sub contnet {
     my ($this) = @_;
 
