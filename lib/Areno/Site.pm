@@ -1,5 +1,5 @@
 package Areno::Site;
-
+use 5.010;
 use strict;
 
 sub new {
@@ -48,7 +48,15 @@ sub import_dir {
     for my $item (@dirs) {
         my $item_path = "$dir/$item";
         if ($item_path =~ /\.pm$/ && -f $item_path) {
-            my $package = require $item_path;
+            my $package;
+            my $require_result = eval{
+                $package = require $item_path;
+            };
+            if($@) {
+                say STDERR $@;
+                say STDERR "fail in require $item_path => $package";
+                next;
+            }
             my $page = $package->new($this, $this->{areno});
             $this->{pages}{$page} = $page;
         }
