@@ -1,15 +1,40 @@
+use 5.010;
 use strict;
 
 use lib 'lib';
 use Areno;
+use Plack::Builder;
 
-my $areno = new Areno();
+my $app;
+eval {
+    my $areno = Areno->new();
+    my $my_app = sub {
+        my $env = shift;
 
-sub {
-    my ($env) = @_;
+        $areno->init();
+        $areno->run($env);
 
-    $areno->init();
-    $areno->run($env);
+        return [$areno->status(), $areno->headers(), $areno->body()];
+    };
 
-    return [$areno->status(), $areno->headers(), $areno->body()];
+    $app = builder {
+        enable "Plack::Middleware::AccessLog", format => "combined";
+        enable 'Session', store => 'File';
+
+        if ($ENV{ARENO_OAUTH2_ENABLE}) {
+            enable 'OAuth2',
+                client_id     => $ENV{ARENO_OAUTH2_CLIENT_ID},
+                client_secret => $ENV{ARENO_OAUTH2_CLIENT_SECRET},
+                redirect_uri  => $ENV{ARENO_OAUTH2_REDIRECT_URI},
+        }
+        $my_app;
+    };
+};
+if ($@) {
+    say STDERR "[pid: $$] init error: $@";
+    $app = sub {
+        ["500", [], ["Areno init error"]]
+    };
 }
+
+return $app;
