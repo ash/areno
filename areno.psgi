@@ -8,6 +8,8 @@ use Plack::Builder;
 my $app;
 eval {
     my $areno = Areno->new();
+    die "Init error" unless $areno;
+
     my $my_app = sub {
         my $env = shift;
 
@@ -20,7 +22,10 @@ eval {
     $app = builder {
         enable "Plack::Middleware::AccessLog", format => "combined";
         enable 'Session', store => 'File';
-
+        if ($ENV{STATIC_DIR}) {
+            enable "Plack::Middleware::Static",
+                    path => qr{\.(jpeg|jpg|gif|ico|png|css|js|pdf|txt|tar)$}, root => $ENV{STATIC_DIR};
+        }
         if ($ENV{ARENO_OAUTH2_ENABLE}) {
             enable 'OAuth2',
                 client_id     => $ENV{ARENO_OAUTH2_CLIENT_ID},
