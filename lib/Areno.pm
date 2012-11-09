@@ -98,6 +98,12 @@ sub run {
 
     my $site = $this->dispatch($env);
     my $page = $site->dispatch($env);
+    unless ($page) {
+        $this->{http}{status}  = 404;
+        $this->{http}{headers} = ['Content-Type', 'text/html'];
+        $this->{http}{body}    = [ "<h2>404: Not found $env->{PATH_INFO}</h2>" ];
+        return;
+    }
 
     $page->init($this->{doc});
     $page->run();

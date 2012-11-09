@@ -55,7 +55,7 @@ sub request_uri {
     return $this->{areno}{request}{path};
 }
 
-sub contnet {
+sub content {
     my ($this) = @_;
 
     return $this->{doc}{content};
