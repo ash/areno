@@ -35,8 +35,16 @@ sub transform {
                                         $instructions[$step] .
                                         '.xslt'
                         );
-
         $stylesheet = $xslt->parse_stylesheet($style_source);
+
+        if ($page->can('export')) {
+            my $export = $page->export();
+    
+            while (my ($name, $subref) = each %{$export->{functions}}) {
+                $stylesheet->register_function($export->{uri}, $name, $subref);
+            }
+        }
+
         $dom = $stylesheet->transform($dom);
     }
 
