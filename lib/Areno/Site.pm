@@ -4,7 +4,7 @@ use strict;
 
 sub new {
     my ($class, $areno, $domain, $path) = @_;
-    
+
     my $this = {
         areno  => $areno,
         domain => $domain,
@@ -14,19 +14,19 @@ sub new {
     bless $this, $class;
 
     $this->import_site_structure($domain, $path);
-    
+
     return $this;
 }
 
 sub domain {
     my ($this) = @_;
-    
+
     return $this->{domain};
 }
 
 sub path {
     my ($this) = @_;
-    
+
     return $this->{path};
 }
 
@@ -73,11 +73,23 @@ sub dispatch {
 
     my $pages = $this->{pages};
 
-    my @route = grep {$path_info ~~ $pages->{$_}->route()} keys %$pages;
+    my $args  = $this->{areno}{doc}{request}{arguments};
 
-    warn("More than one possible route for $$this{domain}$path_info: " . join(',', @route) . "\n") if @route > 1;
+    my @routes;
+    for my $page (keys %$pages) {
+        my ( $route, $query ) = $pages->{$page}->route();
+        if ( $path_info ~~ $route ) {
+            if ( $query ) {
+                next if grep { not $query->{$_} ~~ $args->{$_}  } keys %$query;
+            }
+            push @routes, $page;
+        }
 
-    return $pages->{$route[0]};
+    }
+
+    warn("More than one possible route for $$this{domain}$path_info: " . join(',', @routes) . "\n") if @routes > 1;
+
+    return $pages->{$routes[0]};
 }
 
 1;
