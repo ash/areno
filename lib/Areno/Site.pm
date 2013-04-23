@@ -42,28 +42,43 @@ sub import_dir {
     my ($dir) = @_;
 
     opendir my($dir_fh), $dir or die "can't read dir $dir: $!";
-    my @dirs = readdir $dir_fh;
+    my @dir_content = readdir $dir_fh;
     closedir $dir_fh;
 
-    for my $item (@dirs) {
-        my $item_path = "$dir/$item";
-        if ($item_path =~ /\.pm$/ && -f $item_path) {
-            my $package;
-            my $require_result = eval{
-                $package = require $item_path;
-            };
-            if($@) {
-                say STDERR $@;
-                say STDERR "fail in require $item_path => $package";
-                next;
-            }
-            my $page = $package->new($this, $this->{areno});
-            $this->{pages}{$page} = $page;
+    my (@dir_paths, @file_paths);
+    
+    for my $name (@dir_content) {
+        my $path = "$dir/$name";
+        
+        if (-d $path) {
+            push @dir_paths, $path if $name =~ /\w/;
         }
-        elsif (-d $item_path && $item =~ /\w/) {
-            $this->import_dir("$dir/$item");
+        elsif (-f $path) {
+            push @file_paths, $path if $name =~ /\.pm/;
         }
     }
+
+    for my $path (@file_paths) {
+        my $package;
+                    
+        my $require_result = eval{
+            $package = require $path;
+        };
+        
+        if($@) {
+            say STDERR $@;
+            say STDERR "fail in require $path => $package";
+            next;
+        }
+
+        my $page = $package->new($this, $this->{areno});
+        $this->{pages}{$page} = $page;
+    }
+
+    for my $path (@dir_paths) {
+        $this->import_dir($path);
+    }
+
 }
 
 sub dispatch {
