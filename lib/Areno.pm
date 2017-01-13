@@ -13,7 +13,7 @@ use Areno::Content;
 use Areno::Site;
 use Areno::Transform;
 
-sub new {
+sub new s s {
     my ($class) = @_;
 
     my $this = {
