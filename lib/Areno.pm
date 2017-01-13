@@ -1,6 +1,7 @@
 package Areno;
 
 use strict;
+use v5.10;
 
 use Cwd;
 use Plack::Request;
