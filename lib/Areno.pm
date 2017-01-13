@@ -1,7 +1,6 @@
 package Areno;
 
 use strict;
-use v5.10;
 
 use Cwd;
 use Plack::Request;
@@ -13,7 +12,7 @@ use Areno::Content;
 use Areno::Site;
 use Areno::Transform;
 
-sub new s s {
+sub new {
     my ($class) = @_;
 
     my $this = {
